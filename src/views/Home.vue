@@ -1,58 +1,44 @@
 <template>
   <div class="home">
     <h1>Home</h1>
-    <h2>Refs</h2>
-    <!-- <p ref="p">My name is {{ name }} and I am {{ age }} years old.</p> -->
-    <!-- <button @click="handleClick">Click Me!</button> -->
-    <!-- <button @click="age++">Change age</button> -->
-    <!-- <input type="text" v-model="name"> -->
-    <p>{{ ninjaOne.name }} - {{ ninjaOne.age }}</p>
-    <button @click="updateNinjaOne">Update Ninja One</button>
-    <h2>Reactive</h2>
-    <p>{{ ninjaTwo.name }} - {{ ninjaTwo.age }}</p>
-    <button @click="updateNinjaTwo">Update Ninja Two</button>
+    <input type="text" v-model="search">
+    <p>Search term : {{ search }}</p>
+    <div v-for="name in matchingNames" :key="name">
+      {{ name }}
+    </div>
+    <button @click="handleClick">Stop Watching</button>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import { ref, reactive } from 'vue'
+import { computed, ref, watch, watchEffect } from 'vue'
 
 export default {
   name: 'Home',
   setup() {
-    console.log('Setup')
+    const names = ref(['Mario', 'Yoshi', 'Luigi', 'Bowser', 'Toad', 'Kirby', 'Peach'])
+    const search = ref('')
 
-    // const p = ref(null)
+    const stopWatch = watch(search, () => {
+      console.log('Watch function ran')
+    })
 
-    // const name = ref('Mario')
-    // const age = ref(30)
+    const stopWatchEffect = watchEffect(() => {
+      console.log('watchEffect function ran')
+    })
 
-    // const handleClick = () => {
-      // console.log(p, p.value)
-      // p.value.classList.add('test')
-      // p.value.textContent = 'Hello Ninjas !'
-      // name.value = 'Luigi'
-      // age.value = 28
-    // }
+    const matchingNames = computed(() => {
+      return names.value.filter((name) => name.includes(search.value))
+    })
 
-    // return { name, age, handleClick, p }
-
-    const ninjaOne = ref({ name: 'Mario', age: 30 })
-    const ninjaTwo = reactive({ name: 'Luigi', age: 28 })
-
-    const updateNinjaOne = () => {
-      ninjaOne.value.age = 40
+    // Stop Watch and WatchEffect
+    const handleClick = () => {
+      stopWatch()
+      stopWatchEffect()
     }
 
-    // With reactive we don't need to specify we're trying to access the value
-    const updateNinjaTwo = () => {
-      ninjaTwo.age = 35
-    }
-
-    return {
-      ninjaOne, updateNinjaOne, ninjaTwo, updateNinjaTwo
-    }
+    return { names, search, matchingNames, handleClick }
   }
 }
 </script>
